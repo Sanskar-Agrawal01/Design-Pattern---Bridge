@@ -1,0 +1,33 @@
+=== Feature Flag System (Bridge Pattern) ===
+
+--- Evaluation Round 1 ---
+[ANALYTICS] Feature: login_v2 | User: user_101 | Result: false
+Feature [login_v2] for User [user_101] -> DISABLED (Reason: Rollout: 50%. User hash: 92, Engine: PercentageRolloutEngine)
+[ANALYTICS] Feature: login_v2 | User: user_102 | Result: false
+Feature [login_v2] for User [user_102] -> DISABLED (Reason: Rollout: 50%. User hash: 91, Engine: PercentageRolloutEngine)
+[ANALYTICS] Feature: crypto_payment | User: user_101 | Result: true
+Feature [crypto_payment] for User [user_101] -> ENABLED (Reason: User is in targeting list, Engine: UserTargetingEngine)
+[ANALYTICS] Feature: crypto_payment | User: user_102 | Result: false
+Feature [crypto_payment] for User [user_102] -> DISABLED (Reason: User is not in targeting list, Engine: UserTargetingEngine)
+[ANALYTICS] Feature: ai_search | User: user_101 | Result: true
+Feature [ai_search] for User [user_101] -> ENABLED (Reason: All rules satisfied, Engine: RuleBasedEngine)
+[ANALYTICS] Feature: ai_search | User: user_102 | Result: false
+Feature [ai_search] for User [user_102] -> DISABLED (Reason: Attribute mismatch: Expected country=US, got UK, Engine: RuleBasedEngine)
+
+--- Swapping Engines Dynamically ---
+Turning SearchFeature ON for everyone using BooleanEngine...
+[ANALYTICS] Feature: ai_search | User: user_102 | Result: true
+Feature [ai_search] for User [user_102] -> ENABLED (Reason: Static boolean configuration, Engine: BooleanEngine)
+
+--- Demonstrating Caching Decorator ---
+First call (Cache Miss):
+[Cache Miss] Evaluating login_v2 for user user_101
+[ANALYTICS] Feature: login_v2 | User: user_101 | Result: false
+Feature [login_v2] for User [user_101] -> DISABLED (Reason: Rollout: 10%. User hash: 92, Engine: PercentageRolloutEngine)
+Second call (Cache Hit - No evaluation output):
+[ANALYTICS] Feature: login_v2 | User: user_101 | Result: false
+Feature [login_v2] for User [user_101] -> DISABLED (Reason: Rollout: 10%. User hash: 92, Engine: PercentageRolloutEngine)
+
+--- Demonstrating Fallback (No Engine) ---
+[ANALYTICS] Feature: crypto_payment | User: user_101 | Result: false
+Feature [crypto_payment] for User [user_101] -> DISABLED (Reason: No engine set, using fallback, Engine: None)
